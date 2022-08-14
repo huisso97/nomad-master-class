@@ -35,8 +35,8 @@ function Coins() {
         <CoinsList>
           {coins.map((coin) => (
             <Coin key={coin.id}>
-              <Link to={`/${coin.id}`}>
-                <img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt={coin.symbol} />
+              <Link to={`/${coin.id}`} state={coin}>
+                <Img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} alt={coin.symbol} />
                 {coin.name} &rarr;
               </Link>
             </Coin>
@@ -70,9 +70,10 @@ const Coin = styled.li`
   border-radius: 15px;
   margin-bottom: 10px;
   a {
+    display: flex;
     padding: 20px;
     transition: color 0.2s ease-in;
-    display: block;
+    align-items: center;
   }
 
   &:hover {
@@ -90,4 +91,10 @@ const Title = styled.h1`
 const Loader = styled.span`
   display: block;
   text-align: center;
+`;
+
+const Img = styled.img`
+  height: 35px;
+  width: 35px;
+  margin-right: 10px;
 `;
