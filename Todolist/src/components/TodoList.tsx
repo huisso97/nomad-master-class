@@ -1,54 +1,33 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-
-const toDoSate = atom<IToDo[]>({
-  key: "toDO",
-  default: [],
-});
-
-interface IForm {
-  toDo: string;
-}
-
-interface IToDo {
-  text: string;
-  id: number;
-  category: "DONE" | "TO_DO" | "DOING";
-}
+import React from 'react';
+import {useRecoilState, useRecoilValue} from 'recoil';
+import {Categories, categoryState, toDoSelector} from '../atoms';
+import CreateToDo from './CreateToDo';
+import ToDo from './ToDo';
 
 function ToDoList() {
-  const [toDos, setTodos] = useRecoilState(toDoSate);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<IForm>();
-  // 입력값이 submit이 되고, 값이 검사를 통과하면 다시 input 비우고 싶다
-  // const handleValid = (data:IForm)에서 toDo를 뺀거임
-  const handleValid = ({ toDo }: IForm) => {
-    setTodos((oldTodos) => [{ text: toDo, id: Date.now(), category: "TO_DO" }, ...oldTodos]);
-    setValue("toDo", "");
+  const toDos = useRecoilValue(toDoSelector);
+  const [category, setCategory] = useRecoilState(categoryState);
+  const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
+    const {
+      currentTarget: {value},
+    } = event;
+    console.log(value);
+    setCategory(value as Categories);
   };
-  console.log(toDos);
+
   return (
     <div>
-      <form onSubmit={handleSubmit(handleValid)}>
-        <input
-          {...register("toDo", {
-            required: "plz write a to do",
-          })}
-          placeholder="Write a to do"
-        />
-        <span>{errors.toDo?.message}</span>
-        <button>Add</button>
-      </form>
-      <ul>
-        {toDos.map((toDo) => (
-          <li key={toDo.id}>{toDo.text}</li>
-        ))}
-      </ul>
+      <h1>ToDos</h1>
+      <hr />
+      <select value={category} onInput={onInput}>
+        <option value={Categories.TO_DO}>TO DO</option>
+        <option value={Categories.DOING}>DOING</option>
+        <option value={Categories.DONE}>DONE</option>
+      </select>
+      <CreateToDo />
+      {toDos?.map(toDo => (
+        <ToDo key={toDo.id} {...toDo} />
+      ))}
     </div>
   );
 }
